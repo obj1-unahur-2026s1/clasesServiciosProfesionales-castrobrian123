@@ -1,9 +1,106 @@
-import example.pepita
+import example.*
 
-describe "group of tests for pepita" {
+const deSanMartin = new Universidad (
+    provinciaDondeSeUbica = "Buenos Aires",
+    honorarioRecomendadoPorHora = 3500
+)
 
-  test "pepita has initial energy" {
-    assert.equals(100, pepita.energy())
-  }
+const deRosario = new Universidad ( 
+    provinciaDondeSeUbica = "Santa Fe",
+    honorarioRecomendadoPorHora = 2800
+)
+
+const deCorrientes = new Universidad (
+    provinciaDondeSeUbica = "Corrientes",
+    honorarioRecomendadoPorHora = 4200
+)
+
+const deHurlingham = new Universidad (
+    provinciaDondeSeUbica = "Buenos Aires",
+    honorarioRecomendadoPorHora = 8800
+)
+
+const juana = new Profesional (
+    universidadDondeEstudio = deRosario,
+    honorariosPorHora = vinculado.honorarios(deRosario),
+    provinciasDondePuedeTrabajar = vinculado.provincias(deRosario)
+)
+
+/*
+const juana = new Profesional (
+    universidadDondeEstudio = deRosario,
+    dondeEstaVinculado = deRosario,
+    honorarios = ProfVinculadosAUnaUniversidad.honorarios(),
+    provinciasEnLasQuePuedeTrabajar = [ ProfVinculadosAUnaUniversidad.provinciasDondePuedenTrabajar() ]
+)
+*/
+
+const melina = new Profesional (
+    universidadDondeEstudio = deCorrientes,
+    honorariosPorHora = (asociadosDelLitoral.honorarios()) ,
+    provinciasDondePuedeTrabajar = [ asociadosDelLitoral.provincias().forEach({ p => p}) ]
+)
+
+const rocio = new Profesional ( 
+    universidadDondeEstudio = deHurlingham,
+    honorariosPorHora = 5000,
+    provinciasDondePuedeTrabajar = ["Santa Fe", "Córdoba", "Buenos Aires"]
+)
+
+const luciana = new Profesional (
+    universidadDondeEstudio = deRosario,
+    honorariosPorHora = 3200,
+    provinciasDondePuedeTrabajar = ["Santa Fe", "Entre Rios"]
+)
+
+const empresa = new EmpresaDeServicios (
+    honorarios = 3500, profesionales = [ ]
+) 
+
+describe "algo" {
+
+    method initialize() {
+        empresa.contratar(juana)
+        empresa.contratar(melina)
+        empresa.contratar(rocio)
+        empresa.contratar(luciana)
+        empresa.honorarioReferencia(3500)
+    }
+    
+    test "Empresa" {
+        assert.equals(4, empresa.profesionales().size())
+        assert.equals(2, empresa.profQueEstudiaronEn(deRosario))
+        assert.equals(1, empresa.profQueEstudiaronEn(deHurlingham))
+        assert.equals(0, empresa.profQueEstudiaronEn(deSanMartin))
+    }
+
+    test "Profesional Caro, es Rocio" {
+        assert.equals([rocio], empresa.profesionalesCaros())
+        assert.equals(1, empresa.profesionalesCaros().size())
+    }
+
+    test "Universidades Formadoras" {
+        assert.that(empresa.universidadesFormadoras().contains(deHurlingham))
+        assert.that(empresa.universidadesFormadoras().contains(deRosario))
+        assert.that(empresa.universidadesFormadoras().contains(deCorrientes))
+    }
+
+    test "Profesional Mas Barato, es juana" {
+        assert.equals(juana, empresa.profesionalMasBarato())
+    }
+
+    test "Es de gente acotada, luego de modificar a luciana, ya no" {
+        const lucianaM = new Profesional(
+            universidadDondeEstudio = deRosario,
+            honorariosPorHora = 3200,
+            provinciasDondePuedeTrabajar = ["Santa Fe", "Entre Ríos", "Corrientes", "Misiones"]
+        )
+        assert.that(empresa.esDeGenteAcotada())
+        empresa.despedir(luciana)
+        assert.notThat(empresa.profesionales().contains(luciana))
+        empresa.contratar(lucianaM)
+        assert.that(empresa.profesionales().contains(lucianaM))
+        assert.notThat(empresa.esDeGenteAcotada())
+    }
 
 }
